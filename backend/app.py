@@ -9,21 +9,17 @@ CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 global_db=None
 def give_strctured(dataFrame):
-   DeliverableQty_numeric=[]
-   
-   df=dataFrame.copy()
-   for i in (df["DeliverableQty"].str.split(",")):
-      DeliverableQty_numeric.append("".join(i))
-   df["DeliverableQty_Numeric"]=DeliverableQty_numeric
-   df["DeliverableQty_Numeric"]=df["DeliverableQty_Numeric"].astype(np.int64)
-   df["Date_time"]=pd.to_datetime(dataFrame["Date"],format="%d-%b-%Y")
-   df["weekday"]=list(map(lambda x:x.day_name(),df["Date_time"]))
+        df = dataFrame.copy()
 
-   df=df[["Symbol","Date_time","DeliverableQty_Numeric","weekday"]]
+        df["DeliverableQty_Numeric"] = pd.to_numeric(df["DeliverableQty"].str.replace(",", ""), errors='coerce')
+        df["DeliverableQty_Numeric"] = df["DeliverableQty_Numeric"].fillna(0).astype(np.int64)
+        df["Date_time"] = pd.to_datetime(df["Date"], format="%d-%b-%Y")
+        df["weekday"] = df["Date_time"].dt.day_name()
 
-   return df
+        df = df[["Symbol", "Date_time", "DeliverableQty_Numeric", "weekday"]]
 
-
+        return df
+ 
 def fetch_data(symbol, from_date, to_date):
     # Simulate fetching data
     global global_db
