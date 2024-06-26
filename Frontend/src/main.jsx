@@ -1,15 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
-import './index.css'
-import Navbar from './components/Navbar/Navbar.jsx'
-import MiddleLayer from './components/MiddleLayer/MiddleLayer.jsx'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import Navbar from "./components/Navbar/Navbar.jsx";
+import MiddleLayer from "./components/MiddleLayer/MiddleLayer.jsx";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-   
- <Navbar/>
- <MiddleLayer/>
-
-  </React.StrictMode>,
-)
+    <Navbar />
+    <MiddleLayer />
+  </React.StrictMode>
+);

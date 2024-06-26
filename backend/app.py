@@ -148,9 +148,6 @@ def get_week_wise_diff_closePrice(dataFrame):
    
 
     for i in range(non_saturday_df.shape[0]):
-
-     
-
         next_year,next_weak,_=non_saturday_df.iloc[i]["Date_time"].date().isocalendar()
         next_val=non_saturday_df.iloc[i]["ClosePrice_numeric"]
 
@@ -167,11 +164,7 @@ def get_week_wise_diff_closePrice(dataFrame):
            
     if not check:
       list_of_diff.append(abs(float(next_val-curr_val)))
-      
-      
     
-      
-     
     return list_of_diff
     
 def get_month_wise_diff_closePrice(dataFrame,chance):
@@ -209,10 +202,8 @@ def get_month_wise_diff_closePrice(dataFrame,chance):
              
           
     if not check:
-
       list_of_diff.append(abs(float(next_val-curr_val)))
  
-
     return list_of_diff
 
 @app.route('/api/fetch-data', methods=['GET','POST'])

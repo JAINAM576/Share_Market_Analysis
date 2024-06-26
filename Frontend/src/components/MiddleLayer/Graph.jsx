@@ -7,62 +7,74 @@ import axios from "axios";
 import Filter_box from "./Filter_box";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import gsap from 'gsap'
+import gsap from "gsap";
 function Graph() {
   const { user, setUser } = useForm();
   const array_of_filters = [
-    [0, "Daily",useId()],[1, "week",useId()],
-    [1, "month",useId()],
-    [2, "month",useId()],
-    [3, "month",useId()],
-    [6, "month",useId()],
+    [0, "Daily", useId()],
+    [1, "week", useId()],
+    [1, "month", useId()],
+    [2, "month", useId()],
+    [3, "month", useId()],
+    [6, "month", useId()],
   ];
   const [filterobj, setFilterobj] = useState({});
-  const [selectedId,setselectedId]=useState(array_of_filters[0][2])
+  const [selectedId, setselectedId] = useState(array_of_filters[0][2]);
   useEffect(() => {
     let { filter_range, val } = filterobj;
-    let {Date_time,weekday,DeliverableQty_Numeric,ClosePrice_numeric}=user;
+    let { Date_time, weekday, DeliverableQty_Numeric, ClosePrice_numeric } =
+      user;
     if (filter_range == undefined || val == undefined) return;
     axios
-      .post("/api/fetch-data-filter", { filter_range, val,Date_time,weekday,DeliverableQty_Numeric,ClosePrice_numeric })
+      .post("/api/fetch-data-filter", {
+        filter_range,
+        val,
+        Date_time,
+        weekday,
+        DeliverableQty_Numeric,
+        ClosePrice_numeric,
+      })
       .then((response) => {
         setUser(response.data);
       })
       .catch((error) => console.log("error"));
   }, [filterobj]);
   console.log(user, "user");
-const container=useRef()
- const boxesRef = useRef([]);
-useGSAP(()=>{
-   gsap.fromTo(
+  const container = useRef();
+  const boxesRef = useRef([]);
+  useGSAP(() => {
+    gsap.fromTo(
       container.current,
-      { opacity: 0, y: 50 }, 
-      { opacity: 1, y: 0, duration: 2, ease: 'power3.out' } 
+      { opacity: 0, y: 50 },
+      { opacity: 1, y: 0, duration: 2, ease: "power3.out" }
     );
-
-     
 
     // gsap.fromTo(
     //   boxesRef.current,
-    //   { x: -100, opacity: 0 }, 
+    //   { x: -100, opacity: 0 },
     //   {
     //     x: 0,
     //     opacity: 1,
     //     duration: 1,
-    //     stagger: 0.3, 
+    //     stagger: 0.3,
     //     ease: 'power3.out',
     //   }
     // );
-},[user])
-console.log(user)
+  }, [user]);
+  console.log(user);
   return (
     <>
       {user && (
         <div className="graphcontainer">
-        <div className="arrow">
-          <a href="https://www.flaticon.com/free-icons/alternatives" title="alternatives icons">Alternatives icons created by Freepik - Flaticon</a>
-        </div>
-         <div className="upperpart" ref={container}>
+          <div className="arrow">
+            <a
+              href="https://www.flaticon.com/free-icons/alternatives"
+              title="alternatives icons"
+            >
+              Alternatives icons created by Freepik - Flaticon
+            </a>
+          </div>
+          <div className="upperpart" ref={container}>
             <Plot
               data={[
                 {
@@ -72,31 +84,30 @@ console.log(user)
                   name: "Deliverable Quantity",
                   marker: { color: "#b18c6f", size: 8 },
                   opacity: 0.8,
-               
-                  orientation:"v"
+
+                  orientation: "v",
                 },
                 {
-                  x:  user.x, 
-                  y:  user.avaerageVal,
+                  x: user.x,
+                  y: user.avaerageVal,
                   type: "scatter",
-                   mode: user.x.length > 1 ? "lines+markers" : "markers", 
+                  mode: user.x.length > 1 ? "lines+markers" : "markers",
                   name: "Line Of Average",
                   // line: { color: "#059212", width: 2 },
-                line: { color: "green", width: 3, dash: 'dash' },
+                  line: { color: "green", width: 3, dash: "dash" },
                 },
-                 {
-                  x:  user.x, 
-                  y:  user.closePriceData,
-                   type: "bar",
+                {
+                  x: user.x,
+                  y: user.closePriceData,
+                  type: "bar",
                   name: "Close Price",
                   marker: { color: "#3b7fb9", size: 8 },
                   opacity: 0.6,
-                 
-                  orientation:"v",
+
+                  orientation: "v",
                   // offset:0.4,
-                  yaxis:'y2'
+                  yaxis: "y2",
                 },
-                
               ]}
               layout={{
                 title: {
@@ -145,25 +156,25 @@ console.log(user)
                       color: "purple",
                     },
                   },
-                  overlaying: 'y',
-                  side: 'right',
+                  overlaying: "y",
+                  side: "right",
                   showgrid: false,
                   zeroline: true,
                   gridcolor: "#e9e9e9",
                   color: "white",
                 },
-                  // Group bars together
+                // Group bars together
                 template: "plotly",
                 width: 750,
                 height: 550,
-               
+
                 paper_bgcolor: "#290439db",
                 plot_bgcolor: "#e5ecf6",
                 hovermode: "closest",
-                  legend: {
+                legend: {
                   x: 0.73,
                   y: 1,
-                  bgcolor: '#fff',
+                  bgcolor: "#fff",
                   orientation: "v",
                 },
               }}
@@ -189,20 +200,27 @@ console.log(user)
             />
           </div>
           <div className="lowerpart">
-{
-    array_of_filters.map((element,index)=>{
-      return (  <div className="parent" key={element[2]} style={selectedId==element[2]?{'backgroundColor':'black','transform':'scale(1.1)'}:{}} onClick={(e)=>{setselectedId(element[2])
-        setFilterobj({filter_range:element[1],val:element[0]})
-      }}
-          ref={(el) => (boxesRef.current[index] = el)}
-      >
-
-        <Filter_box filter_range={element[1]} val={element[0]}  />
-        </div>)
-    })
-}
+            {array_of_filters.map((element, index) => {
+              return (
+                <div
+                  className="parent"
+                  key={element[2]}
+                  style={
+                    selectedId == element[2]
+                      ? { backgroundColor: "black", transform: "scale(1.1)" }
+                      : {}
+                  }
+                  onClick={(e) => {
+                    setselectedId(element[2]);
+                    setFilterobj({ filter_range: element[1], val: element[0] });
+                  }}
+                  ref={(el) => (boxesRef.current[index] = el)}
+                >
+                  <Filter_box filter_range={element[1]} val={element[0]} />
+                </div>
+              );
+            })}
           </div>
-
         </div>
       )}
     </>
