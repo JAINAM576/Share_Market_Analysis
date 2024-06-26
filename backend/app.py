@@ -12,11 +12,16 @@ def give_strctured(dataFrame):
         df = dataFrame.copy()
 
         df["DeliverableQty_Numeric"] = pd.to_numeric(df["DeliverableQty"].str.replace(",", ""), errors='coerce')
+        df["ClosePrice_numeric"] = pd.to_numeric(df["ClosePrice"].str.replace(",", ""), errors='coerce')
+
+
         df["DeliverableQty_Numeric"] = df["DeliverableQty_Numeric"].fillna(0).astype(np.int64)
+        df["ClosePrice_numeric"] = df["ClosePrice_numeric"].fillna(0).astype(np.float64)
+
         df["Date_time"] = pd.to_datetime(df["Date"], format="%d-%b-%Y")
         df["weekday"] = df["Date_time"].dt.day_name()
 
-        df = df[["Symbol", "Date_time", "DeliverableQty_Numeric", "weekday"]]
+        df = df[["Symbol", "Date_time", "DeliverableQty_Numeric", "weekday","ClosePrice_numeric"]]
 
         return df
  
@@ -122,6 +127,94 @@ def root():
     return 'Hello world'
 
 
+def get_day_wise_diff_closePrice(dataFrame):
+   list_of_diff=[]
+   non_saturday_df = dataFrame[(dataFrame['weekday'] != 'Saturday')]
+   if non_saturday_df.shape[0]==0 :
+      return ([],[])
+   for i in range(non_saturday_df.shape[0]-1 ):
+      list_of_diff.append(abs(float(non_saturday_df.iloc[i]["ClosePrice_numeric"]-non_saturday_df.iloc[i+1]["ClosePrice_numeric"])))
+   return list_of_diff
+      
+def get_week_wise_diff_closePrice(dataFrame):
+    list_of_diff=[]
+    
+    check=False
+    non_saturday_df = dataFrame[(dataFrame['weekday'] != 'Saturday')]
+    if non_saturday_df.shape[0]==0 :
+      return ([],[])
+    current_year,current_week,_=non_saturday_df.iloc[0]["Date_time"].date().isocalendar()
+    curr_val=non_saturday_df.iloc[0]["ClosePrice_numeric"]
+   
+
+    for i in range(non_saturday_df.shape[0]):
+
+     
+
+        next_year,next_weak,_=non_saturday_df.iloc[i]["Date_time"].date().isocalendar()
+        next_val=non_saturday_df.iloc[i]["ClosePrice_numeric"]
+
+
+        if current_year==next_year and current_week==next_weak :
+           check=False
+        else:
+            list_of_diff.append(abs(float(next_val-curr_val)))
+            current_year=next_year
+            current_week=next_weak
+            curr_val=next_val
+            check=True
+
+           
+    if not check:
+      list_of_diff.append(abs(float(next_val-curr_val)))
+      
+      
+    
+      
+     
+    return list_of_diff
+    
+def get_month_wise_diff_closePrice(dataFrame,chance):
+    list_of_diff=[]
+    month=0
+    check=False
+    non_saturday_df = dataFrame[(dataFrame['weekday'] != 'Saturday')]
+    if non_saturday_df.shape[0]==0 :
+      return ([],[])
+    
+    current_year,current_month,curr_val=non_saturday_df.iloc[0]["Date_time"].date().year,non_saturday_df.iloc[0]["Date_time"].date().month,non_saturday_df.iloc[0]["ClosePrice_numeric"]
+
+    for i in range(non_saturday_df.shape[0]):
+
+
+        next_year,next_month=non_saturday_df.iloc[i]["Date_time"].date().year,non_saturday_df.iloc[i]["Date_time"].date().month
+        next_val=non_saturday_df.iloc[i]["ClosePrice_numeric"]
+
+
+        if current_year==next_year and current_month==next_month :
+             check=False
+        else:
+          month+=1
+          if month==chance:
+             list_of_diff.append(abs(float(next_val-curr_val)))
+             curr_val=next_val
+             current_year=next_year
+             current_month=next_month
+        
+             month=0
+             check=True
+          else :
+              current_year=next_year
+              current_month=next_month
+             
+          
+    if not check:
+
+      list_of_diff.append(abs(float(next_val-curr_val)))
+ 
+
+    return list_of_diff
+
 @app.route('/api/fetch-data', methods=['GET','POST'])
 @cross_origin()
 def fetch_data_endpoint():
@@ -134,7 +227,13 @@ def fetch_data_endpoint():
     Date_time=global_db["Date_time"].tolist()
     DeliverableQty_Numeric=global_db["DeliverableQty_Numeric"].tolist()
     weekday=global_db["weekday"].tolist()
-    return jsonify({'x': x, 'y': y,'Date_time':Date_time,'DeliverableQty_Numeric':DeliverableQty_Numeric,"weekday":weekday})
+    ClosePrice_numeric=global_db["ClosePrice_numeric"].tolist()
+
+    average_val=np.average(global_db["DeliverableQty_Numeric"]).item()
+    average_val_list=[average_val]*len(y)
+    closePriceData=get_day_wise_diff_closePrice(global_db)
+
+    return jsonify({'x': x, 'y': y,'Date_time':Date_time,'DeliverableQty_Numeric':DeliverableQty_Numeric,"weekday":weekday,"ClosePrice_numeric":ClosePrice_numeric,"averageVal":average_val_list,"closePriceData":closePriceData})
 
 @app.route('/api/fetch-data-filter', methods=['GET','POST'])
 @cross_origin()
@@ -143,24 +242,39 @@ def fetch_data_filter_endpoint():
     print(data)
     filter_range = data['filter_range']
     val = int(data['val'])
-    global_db=pd.DataFrame({'Date_time':data['Date_time'],'weekday':data['weekday'],'DeliverableQty_Numeric':data['DeliverableQty_Numeric']})
+    global_db=pd.DataFrame({'Date_time':data['Date_time'],'weekday':data['weekday'],'DeliverableQty_Numeric':data['DeliverableQty_Numeric'],'ClosePrice_numeric':data['ClosePrice_numeric']})
     Date_time=global_db["Date_time"].tolist()
     DeliverableQty_Numeric=global_db["DeliverableQty_Numeric"].tolist()
+    ClosePrice_numeric=global_db["ClosePrice_numeric"].tolist()
+
     weekday=global_db["weekday"].tolist()
     global_db["Date_time"]=pd.to_datetime(global_db["Date_time"])
     x,y=[],[]
     if filter_range=='week':
       x,y= get_week(global_db)
       y = list(map(int, y))
+      closePriceData=get_week_wise_diff_closePrice(global_db)
+
+      
+     
+
     
     elif filter_range=='Daily':
           x=list(map(lambda x:x.strftime("%d-%b-%y"),global_db["Date_time"]))
           y=global_db["DeliverableQty_Numeric"].to_list()
+          closePriceData=get_day_wise_diff_closePrice(global_db)
+
     else :
          x,y= get_month(global_db,val)
 
+
          y = list(map(int, y))
-    return jsonify({'x': x, 'y': y,'Date_time':Date_time,'DeliverableQty_Numeric':DeliverableQty_Numeric,"weekday":weekday})
+         closePriceData=get_month_wise_diff_closePrice(global_db,val)
+
+    average_val=np.average(global_db["DeliverableQty_Numeric"]).item()
+    average_val_list=[average_val]*len(y)
+    
+    return jsonify({'x': x, 'y': y,'Date_time':Date_time,'DeliverableQty_Numeric':DeliverableQty_Numeric,"weekday":weekday,"ClosePrice_numeric":ClosePrice_numeric,"avaerageVal":average_val_list,"closePriceData":closePriceData})
 
 @app.route('/api/dummy', methods=['GET','POST'])
 @cross_origin()

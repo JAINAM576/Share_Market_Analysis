@@ -21,10 +21,10 @@ function Graph() {
   const [selectedId,setselectedId]=useState(array_of_filters[0][2])
   useEffect(() => {
     let { filter_range, val } = filterobj;
-    let {Date_time,weekday,DeliverableQty_Numeric}=user;
+    let {Date_time,weekday,DeliverableQty_Numeric,ClosePrice_numeric}=user;
     if (filter_range == undefined || val == undefined) return;
     axios
-      .post("/api/fetch-data-filter", { filter_range, val,Date_time,weekday,DeliverableQty_Numeric })
+      .post("/api/fetch-data-filter", { filter_range, val,Date_time,weekday,DeliverableQty_Numeric,ClosePrice_numeric })
       .then((response) => {
         setUser(response.data);
       })
@@ -54,95 +54,139 @@ useGSAP(()=>{
     //   }
     // );
 },[user])
-
+console.log(user)
   return (
     <>
       {user && (
         <div className="graphcontainer">
-          
-          <div className="upperpart" ref={container}>
-            {
-              <Plot
-                data={[
-                  {
-                    x: user.x,
-                    y: user.y,
-                    type: "bar",
-                    mode: "lines+markers",
-                    name: "Deliverable Quantity",
-                    marker: { color: "blue", size: 8 },
-                    line: { smoothing: 1.3, color: "blue",width:1 },
-                    opacity:0.8
+        <div className="arrow">
+          <a href="https://www.flaticon.com/free-icons/alternatives" title="alternatives icons">Alternatives icons created by Freepik - Flaticon</a>
+        </div>
+         <div className="upperpart" ref={container}>
+            <Plot
+              data={[
+                {
+                  x: user.x,
+                  y: user.y,
+                  type: "bar",
+                  name: "Deliverable Quantity",
+                  marker: { color: "#b18c6f", size: 8 },
+                  opacity: 0.8,
+               
+                  orientation:"v"
+                },
+                {
+                  x:  user.x, 
+                  y:  user.avaerageVal,
+                  type: "scatter",
+                   mode: user.x.length > 1 ? "lines+markers" : "markers", 
+                  name: "Line Of Average",
+                  // line: { color: "#059212", width: 2 },
+                line: { color: "green", width: 3, dash: 'dash' },
+                },
+                 {
+                  x:  user.x, 
+                  y:  user.closePriceData,
+                   type: "bar",
+                  name: "Close Price",
+                  marker: { color: "#3b7fb9", size: 8 },
+                  opacity: 0.6,
+                 
+                  orientation:"v",
+                  // offset:0.4,
+                  yaxis:'y2'
+                },
+                
+              ]}
+              layout={{
+                title: {
+                  text: "Line and Bar Plot of Deliverable Quantity Over Time",
+                  font: {
+                    family: "Arial, sans-serif",
+                    size: 24,
+                    color: "purple",
                   },
-                ]}
-                layout={{
+                },
+                xaxis: {
                   title: {
-                    text: "Line Plot of Deliverable Quantity Over Time",
+                    text: "Date",
                     font: {
                       family: "Arial, sans-serif",
-                      size: 24,
+                      size: 18,
                       color: "purple",
                     },
                   },
-                  xaxis: {
-                    title: {
-                      text: "Date",
-                      font: {
-                        family: "Arial, sans-serif",
-                        size: 18,
-                        color: "purple",
-                      },
+                  tickformat: "%d-%b-%Y",
+                  showgrid: true,
+                  zeroline: true,
+                  gridcolor: "#e9e9e9",
+                  color: "white",
+                },
+                yaxis: {
+                  title: {
+                    text: "Deliverable Quantity",
+                    font: {
+                      family: "Arial, sans-serif",
+                      size: 18,
+                      color: "purple",
                     },
-                    tickformat: "%d-%b-%Y",
-                    showgrid: true,
-                    zeroline: true,
-                    gridcolor: "#e9e9e9",
-                    color: "white",
                   },
-                  yaxis: {
-                    title: {
-                      text: "Deliverable Quantity",
-                      font: {
-                        family: "Arial, sans-serif",
-                        size: 18,
-                        color: "purple",
-                      },
+                  showgrid: true,
+                  zeroline: true,
+                  gridcolor: "#e9e9e9",
+                  color: "white",
+                },
+                yaxis2: {
+                  title: {
+                    text: "Close Price",
+                    font: {
+                      family: "Arial, sans-serif",
+                      size: 18,
+                      color: "purple",
                     },
-                    showgrid: true,
-                    zeroline: true,
-                    gridcolor: "#e9e9e9",
-                    color: "white",
                   },
-                  template: "plotly",
-                  width: 740,
-                  height: 550,
-                  margin: { t: 50, b: 50, l: 50, r: 50 },
-                  paper_bgcolor: "#290439db",
-                  plot_bgcolor: "#e5ecf6",
-                  hovermode: "closest",
-                }}
-                config={{
-                  responsive: true,
-                  displayModeBar: true,
-
-                  modeBarButtonsToRemove: [
-                    "lasso2d",
-                    "select2d",
-                    "sendDataToCloud",
-                    "zoomIn2d",
-                    "zoomOut2d",
-                    "autoScale2d",
-                    "resetScale2d",
-                    "toggleSpikelines",
-                    "hoverClosestCartesian",
-                    "hoverCompareCartesian",
-                    "zoom2d",
-                    "orbitRotation",
-                    "v1hovermode",
-                  ],
-                }}
-              />
-            }
+                  overlaying: 'y',
+                  side: 'right',
+                  showgrid: false,
+                  zeroline: true,
+                  gridcolor: "#e9e9e9",
+                  color: "white",
+                },
+                  // Group bars together
+                template: "plotly",
+                width: 750,
+                height: 550,
+               
+                paper_bgcolor: "#290439db",
+                plot_bgcolor: "#e5ecf6",
+                hovermode: "closest",
+                  legend: {
+                  x: 0.73,
+                  y: 1,
+                  bgcolor: '#fff',
+                  orientation: "v",
+                },
+              }}
+              config={{
+                responsive: true,
+                displayModeBar: true,
+                modeBarButtonsToRemove: [
+                  "lasso2d",
+                  "select2d",
+                  "sendDataToCloud",
+                  "zoomIn2d",
+                  "zoomOut2d",
+                  "autoScale2d",
+                  "resetScale2d",
+                  "toggleSpikelines",
+                  "hoverClosestCartesian",
+                  "hoverCompareCartesian",
+                  "zoom2d",
+                  "orbitRotation",
+                  "v1hovermode",
+                ],
+              }}
+            />
           </div>
           <div className="lowerpart">
 {
