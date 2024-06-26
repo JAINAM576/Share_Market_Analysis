@@ -1,0 +1,41 @@
+.graphcontainer{
+     background-color: red;
+    
+    width: 100%;
+    background-color: rgba(41, 4, 57, 0.3);
+    border-radius: 10px;
+    border: 1px solid white;
+    box-shadow: 10px 5px 10px rgba(41, 4, 57, 0.6),
+    10px 5px -10px rgba(41, 4, 57, 0.6);
+
+
+min-height: 82vh;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+
+/* for graph */
+.lowerpart{
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+background-color: rgba(128, 0, 128, 0.412);
+
+}
+
+.box{
+    background-color: rgba(0, 0, 0, 0.66);
+    padding: 10px 8px;
+    box-shadow: 0px 0px 10px white;
+    border: 1px solid white;
+    color: yellow;
+    cursor: pointer;
+    border-radius: 10px;
+
+}
+
+.parent{
+    transition: all 0.8;
+}

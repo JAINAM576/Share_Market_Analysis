@@ -1,0 +1,76 @@
+.formcontainer{
+    background-color: red;
+    
+    width: 90%;
+    background-color: #290439a3;
+    /* background-color: #290439db; */
+
+    border-radius: 10px;
+    border: 1px solid white;
+    box-shadow: 10px 5px 10px rgba(41, 4, 57, 0.6),
+    10px 5px -10px rgba(41, 4, 57, 0.6);
+
+min-height: 43vh;
+    }
+    .formcontainer h1{
+        text-align: center;
+    }
+
+.formbox{
+    margin-top:20px ;
+}
+.inputStyle {
+  
+height: 5vh;
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 30px 0px;
+}
+
+.inputStyle input{
+    
+    margin-left: 20px;
+    height: 100%;
+    border-radius: 10px;
+    background-color: rgba(128, 0, 128, 0.199);
+    width: 60%;
+    outline: 1px solid white;
+    
+    cursor: pointer;
+    color: white;
+}
+
+.from_date{
+    margin-left: 5px !important;
+    
+}
+.Button{
+height: 5vh;
+display: flex;
+justify-content: center;
+align-items: center;
+   cursor: pointer;
+}
+.Button button{
+    width: 30%;
+   cursor: pointer;
+
+ height: 100%;
+    background-color: rgb(19, 0, 128);
+color: wheat;
+border: 1px solid white;
+box-shadow: 0px 0px 10px purple;
+    border-radius: 13px;
+}
+
+input[type="date"]::-webkit-datetime-edit { padding: 1em; }
+
+
+input[type="date"]::-webkit-inner-spin-button { display: none; }
+input[type="date"]::-webkit-calendar-picker-indicator { 
+    
+    color: white;
+    font-size: 2rem;
+   border-left:2px solid white;
+    }

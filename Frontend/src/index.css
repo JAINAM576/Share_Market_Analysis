@@ -1,0 +1,36 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald:wght@200..700&display=swap');
+
+*{
+  margin: 0px;
+  padding:  0px;
+
+ font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 210;
+  font-style: normal;
+box-sizing: border-box;
+
+}
+
+
+body{
+  width: auto;
+  height: auto;
+  color: white;
+  
+ background: url("./assests/background.jpg") no-repeat ;
+  background-size: cover;
+
+}
+/* 
+body::before{
+  content: '';
+  width: 100%;
+  height: 100%;
+  top:0%;
+ 
+  position: absolute;
+  z-index: -1;
+  opacity: 0.8;
+} */

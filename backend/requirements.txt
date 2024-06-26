@@ -1,0 +1,10 @@
+Flask==3.0.3
+nselib==0.7
+numpy==2.0.0
+pandas==2.2.2
+waitress
+flask-cors
+requests
+beautifulsoup4
+scipy
+lxml
